@@ -31,3 +31,10 @@ export interface User {
   lastName?: string;
   avatarUrl?: string;
 }
+
+export interface OutboundMessage {
+  userId: string;
+  type: 'CHAT' | 'NOTIFICATION' | 'STREAM' | 'SYSTEM';
+  payload: any;
+  timestamp: string;
+}
