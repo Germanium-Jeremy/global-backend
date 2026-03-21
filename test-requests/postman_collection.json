@@ -1,0 +1,392 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4789-8a9b-c0d1e2f3a4b5",
+		"name": "Global Backend API",
+		"description": "Collection for testing the Global Backend microservices including WebSockets",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "auth", "register" ]
+						}
+					}
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"adminToken\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "auth", "login" ]
+						}
+					}
+				},
+				{
+					"name": "Register Standard User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"standard\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "auth", "register" ]
+						}
+					}
+				},
+				{
+					"name": "Login Standard User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"token\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "auth", "login" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Testing Service",
+			"item": [
+				{
+					"name": "Public Endpoint",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/test/public",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "test", "public" ]
+						}
+					}
+				},
+				{
+					"name": "Authenticated Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/test/authenticated",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "test", "authenticated" ]
+						}
+					}
+				},
+				{
+					"name": "Admin Only Endpoint (Standard Token)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/test/admin",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "test", "admin" ]
+						}
+					}
+				},
+				{
+					"name": "Admin Only Endpoint (Admin Token)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/test/admin",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "test", "admin" ]
+						}
+					}
+				},
+				{
+					"name": "Staff or Admin Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/test/staff-or-admin",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "test", "staff-or-admin" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "AI Service",
+			"item": [
+				{
+					"name": "Get Custom Instructions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/ai/instructions",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "instructions" ]
+						}
+					}
+				},
+				{
+					"name": "Update Custom Instructions",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"systemPrompt\": \"You are a helpful AI assistant who speaks like a pirate.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/instructions",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "instructions" ]
+						}
+					}
+				},
+				{
+					"name": "Full AI Chat Response",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prompt\": \"What is the capital of France?\",\n  \"model\": \"llama3.2:3b\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/chat",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "chat" ]
+						}
+					}
+				},
+				{
+					"name": "Streaming AI Chat Response",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prompt\": \"Tell me a long story about a brave knight.\",\n  \"model\": \"llama3.2:3b\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/chat/stream",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "chat", "stream" ]
+						}
+					}
+				},
+				{
+					"name": "Create New Chat Thread",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"chatId\", jsonData._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"My first AI conversation\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/chats",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "chats" ]
+						}
+					}
+				},
+				{
+					"name": "List All Chats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/ai/chats",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "chats" ]
+						}
+					}
+				},
+				{
+					"name": "Get Specific Chat",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/ai/chats/{{chatId}}",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "chats", "{{chatId}}" ]
+						}
+					}
+				},
+				{
+					"name": "Send Message to Specific Chat",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Hello! How can you help me today?\",\n  \"model\": \"llama3.2:3b\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/chats/{{chatId}}/message",
+							"host": [ "[[baseUrl]]" ],
+							"path": [ "ai", "chats", "{{chatId}}", "message" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "WebSocket Service",
+			"item": [
+				{
+					"name": "Connect to WebSocket",
+					"description": "Connect via Socket.io. IMPORTANT: In Postman, change the request type to 'Socket.io' and set the Auth object to: { \"token\": \"{{token}}\" }",
+					"request": {
+						"method": " launched-websocket",
+						"url": {
+							"raw": "ws://localhost:3000/ws",
+							"protocol": "ws",
+							"host": [ "localhost" ],
+							"port": "3000",
+							"path": [ "ws" ]
+						}
+					}
+				},
+				{
+					"name": "Example: Send Ping",
+					"description": "Once connected, send this event to test heartbeat",
+					"request": {
+						"method": " launched-websocket",
+						"body": {
+							"mode": "raw",
+							"raw": "ping"
+						},
+						"url": {
+							"raw": "ws://localhost:3000/ws"
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "chatId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
