@@ -68,7 +68,24 @@ app.use('/ai', createProxyMiddleware({
   }
 }));
 
+// Proxy /ws requests to websocket-service
+app.use('/ws', createProxyMiddleware({
+  target: 'http://localhost:3005',
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: {
+    '^/ws': '',
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    logger.info(`[Gateway] Proxied /ws request: ${req.method} ${req.url}`);
+  },
+  onError: (err, req, res) => {
+    logger.error(`[Gateway] WS Proxy Error`, err);
+  }
+}));
+
 app.listen(PORT, () => {
+
 
   logger.info(`API Gateway is running on port ${PORT}`);
 });
