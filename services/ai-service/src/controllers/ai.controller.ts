@@ -6,7 +6,7 @@ import { logger } from 'shared';
 
 const OLLAMA_API = 'http://localhost:11434/api/chat';
 const DEFAULT_MODEL = 'llama3.2:3b';
-const SUPPORTED_MODELS = ['llama3.2:3b', 'qwen2.5:3b', 'phi3:mini'];
+const SUPPORTED_MODELS = ['llama3.2:3b', 'qwen2.5:3b', 'phi3:mini', 'gemma4:31b-cloud'];
 
 export class AiController {
   async getInstructions(req: Request, res: Response) {
