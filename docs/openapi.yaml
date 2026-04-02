@@ -1,0 +1,457 @@
+openapi: 3.0.0
+info:
+  title: Global Backend API
+  description: Microservice backend providing Auth, AI Chat, File Management, and Real-time communication.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: API Gateway
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Role:
+      type: string
+      enum: [guest, admin, standard, stuff]
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+        createdAt:
+          type: string
+          format: date-time
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        avatarUrl:
+          type: string
+
+    File:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        fileName:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Chat:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        title:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CustomInstruction:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        systemPrompt:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+paths:
+  # Auth Service
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                username:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid input or user already exists
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful, returns JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        401:
+          description: Unauthorized
+
+  # Testing Service
+  /test/public:
+    get:
+      summary: Public test endpoint
+      tags: [Testing]
+      responses:
+        200:
+          description: Success
+
+  /test/authenticated:
+    get:
+      summary: Authenticated test endpoint
+      tags: [Testing]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Success
+        401:
+          description: Unauthorized
+
+  /test/admin:
+    get:
+      summary: Admin-only test endpoint
+      tags: [Testing]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Success
+        403:
+          description: Forbidden (Admin role required)
+
+  /test/staff-or-admin:
+    get:
+      summary: Staff or Admin test endpoint
+      tags: [Testing]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Success
+        403:
+          description: Forbidden (Staff or Admin role required)
+
+  # Files Service
+  /files:
+    get:
+      summary: List user files
+      tags: [Files]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: List of files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+    post:
+      summary: Create a new file
+      tags: [Files]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                content:
+                  type: string
+      responses:
+        201:
+          description: File created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+
+  /files/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get file by ID
+      tags: [Files]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: File details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+    put:
+      summary: Update file
+      tags: [Files]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                content:
+                  type: string
+      responses:
+        200:
+          description: File updated
+    delete:
+      summary: Delete file
+      tags: [Files]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: File deleted
+
+  # AI Service
+  /ai/instructions:
+    get:
+      summary: Get custom AI instructions
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Current instructions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomInstruction'
+    put:
+      summary: Update custom AI instructions
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                systemPrompt:
+                  type: string
+      responses:
+        200:
+          description: Instructions updated
+
+  /ai/chat:
+    post:
+      summary: Simple AI chat request
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      responses:
+        200:
+          description: AI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+
+  /ai/chat/stream:
+    post:
+      summary: Streaming AI chat request
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      responses:
+        200:
+          description: Streamed AI response (SSE/Chunked)
+
+  /ai/chats:
+    get:
+      summary: List user chat histories
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: List of chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chat'
+    post:
+      summary: Create a new chat session
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        201:
+          description: Chat created
+
+  /ai/chats/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get chat details and messages
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Chat details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat'
+
+  /ai/chats/{id}/message:
+    post:
+      summary: Send a message to a specific chat
+      tags: [AI]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        200:
+          description: Response and updated chat history
+
+  # WebSocket Service
+  /ws/health:
+    get:
+      summary: WebSocket service health check
+      tags: [WebSocket]
+      responses:
+        200:
+          description: Service is healthy
