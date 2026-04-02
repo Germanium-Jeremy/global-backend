@@ -10,7 +10,7 @@ app.use(cors());
 
 // Proxy /auth requests to auth-service
 app.use('/auth', createProxyMiddleware({ 
-  target: 'http://localhost:3001', 
+  target: process.env.AUTH_SERVICE_URL || 'http://localhost:3001', 
   changeOrigin: true,
   pathRewrite: {
     '^/auth': '', 
@@ -25,7 +25,7 @@ app.use('/auth', createProxyMiddleware({
 
 // Proxy /test requests to testing-service
 app.use('/test', createProxyMiddleware({ 
-  target: 'http://localhost:3002', 
+  target: process.env.TESTING_SERVICE_URL || 'http://localhost:3002', 
   changeOrigin: true,
   pathRewrite: {
     '^/test': '',
@@ -40,7 +40,7 @@ app.use('/test', createProxyMiddleware({
 
 // Proxy /files requests to files-service
 app.use('/files', createProxyMiddleware({ 
-  target: 'http://localhost:3003', 
+  target: process.env.FILES_SERVICE_URL || 'http://localhost:3003', 
   changeOrigin: true,
   pathRewrite: {
     '^/files': '',
@@ -55,7 +55,7 @@ app.use('/files', createProxyMiddleware({
 
 // Proxy /ai requests to ai-service
 app.use('/ai', createProxyMiddleware({
-  target: 'http://localhost:3004',
+  target: process.env.AI_SERVICE_URL || 'http://localhost:3004',
   changeOrigin: true,
   pathRewrite: {
     '^/ai': '',
@@ -70,7 +70,7 @@ app.use('/ai', createProxyMiddleware({
 
 // Proxy /ws requests to websocket-service
 app.use('/ws', createProxyMiddleware({
-  target: 'http://localhost:3005',
+  target: process.env.WEB_SOCKET_SERVICE_URL || 'http://localhost:3005',
   changeOrigin: true,
   ws: true,
   pathRewrite: {
