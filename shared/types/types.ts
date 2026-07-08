@@ -25,4 +25,9 @@ export interface User {
   passwordHash: string;
   role: Role;
   createdAt: Date;
+  // Optional profile fields — not required, populated when provided
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  avatarUrl?: string;
 }
