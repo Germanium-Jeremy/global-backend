@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, username, firstName, lastName, avatarUrl } = req.body;
     
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -21,7 +21,12 @@ export const register = async (req: Request, res: Response) => {
     const newUser = new User({
       email,
       passwordHash,
-      role: role || Role.Guest
+      role: role || Role.Guest,
+      // Optional profile fields — only set when provided
+      ...(username   && { username }),
+      ...(firstName  && { firstName }),
+      ...(lastName   && { lastName }),
+      ...(avatarUrl  && { avatarUrl }),
     });
 
     await newUser.save();
@@ -59,7 +64,17 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
     logger.info(`User logged in: ${email}`);
 
-    res.json({ token, role: user.role });
+    res.json({
+      token,
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+      // Return optional profile fields when present
+      username: user.username ?? null,
+      firstName: user.firstName ?? null,
+      lastName: user.lastName ?? null,
+      avatarUrl: user.avatarUrl ?? null,
+    });
   } catch (error: any) {
     logger.error('Login error', error);
     res.status(500).json({ message: 'Internal server error' });
