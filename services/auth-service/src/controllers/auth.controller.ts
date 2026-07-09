@@ -40,11 +40,13 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user) {
+      logger.warn(`Login failed: User not found for email ${email}`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
+      logger.warn(`Login failed: Password mismatch for email ${email}`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
