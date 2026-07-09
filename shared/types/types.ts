@@ -1,7 +1,8 @@
 export enum Role {
-  Customer = 'customer',
+  Guest = 'guest',
   Admin = 'admin',
-  Casual = 'casual',
+  Standard = 'standard',
+  Stuff = 'stuff',
 }
 
 /**
@@ -11,8 +12,8 @@ export interface JwtPayload {
   sub: string;          // user id
   email: string;
   role: Role;
-  iat: number;          // issued at (seconds since epoch)
-  exp: number;          // expiration (seconds since epoch)
+  iat?: number;          // issued at (seconds since epoch)
+  exp?: number;          // expiration (seconds since epoch)
 }
 
 /**
