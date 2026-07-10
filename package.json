@@ -1,20 +1,27 @@
 {
-  "name": "gheremiah-global-backend",
+  "name": "@/gheremiah-global-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Monorepo for API gateway, auth service, testing service and shared utilities",
   "main": "index.js",
+  "workspaces": [
+    "shared",
+    "api-gateway",
+    "services/*"
+  ],
   "scripts": {
+    "dev": "npm --workspaces run dev",
+    "dev:gateway": "npm --workspace api-gateway run dev",
+    "dev:auth": "npm --workspace auth-service run dev",
+    "dev:test": "npm --workspace testing-service run dev",
+    "build": "npm --workspaces run build",
+    "start": "docker-compose up --build",
+    "start:gateway": "npm --workspace api-gateway run start",
+    "start:auth": "npm --workspace auth-service run start",
+    "start:test": "npm --workspace testing-service run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.5.3",
-      "onFail": "download"
-    }
-  },
   "type": "module"
 }
