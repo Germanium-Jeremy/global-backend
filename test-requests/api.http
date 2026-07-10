@@ -1,0 +1,66 @@
+### API Gateway Base URL
+@baseUrl = http://localhost:3000
+
+### 1. Register a new Admin User
+# @name registerAdmin
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123",
+  "role": "admin"
+}
+
+### 2. Login as Admin
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+
+### 3. Register a Standard User
+# @name registerStandard
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "role": "standard"
+}
+
+### 4. Login as Standard User
+# @name loginStandard
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+
+### ---------------- Testing Service Endpoints ----------------
+
+### 5. Public Endpoint
+GET {{baseUrl}}/test/public
+
+### 6. Authenticated Endpoint (Using Standard Token)
+GET {{baseUrl}}/test/authenticated
+Authorization: Bearer {{loginStandard.response.body.token}}
+
+### 7. Admin Only Endpoint (Fails with Standard Token)
+GET {{baseUrl}}/test/admin
+Authorization: Bearer {{loginStandard.response.body.token}}
+
+### 8. Admin Only Endpoint (Succeeds with Admin Token)
+GET {{baseUrl}}/test/admin
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 9. Staff or Admin Endpoint (Succeeds with Admin Token)
+GET {{baseUrl}}/test/staff-or-admin
+Authorization: Bearer {{loginAdmin.response.body.token}}
