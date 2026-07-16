@@ -38,6 +38,21 @@ app.use('/test', createProxyMiddleware({
   }
 }));
 
+// Proxy /files requests to files-service
+app.use('/files', createProxyMiddleware({ 
+  target: 'http://localhost:3003', 
+  changeOrigin: true,
+  pathRewrite: {
+    '^/files': '',
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    logger.info(`[Gateway] Proxied /files request: ${req.method} ${req.url}`);
+  },
+  onError: (err, req, res) => {
+    logger.error(`[Gateway] Files Proxy Error`, err);
+  }
+}));
+
 app.listen(PORT, () => {
   logger.info(`API Gateway is running on port ${PORT}`);
 });
