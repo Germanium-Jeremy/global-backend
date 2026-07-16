@@ -20,7 +20,7 @@
     "start:auth": "npm --workspace auth-service run start",
     "start:files": "npm --workspace files-service run start",
     "start:test": "npm --workspace testing-service run start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
