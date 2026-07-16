@@ -12,11 +12,13 @@
     "dev": "npm --workspaces run dev",
     "dev:gateway": "npm --workspace api-gateway run dev",
     "dev:auth": "npm --workspace auth-service run dev",
+    "dev:files": "npm --workspace files-service run dev",
     "dev:test": "npm --workspace testing-service run dev",
     "build": "npm --workspaces run build",
     "start": "docker-compose up --build",
     "start:gateway": "npm --workspace api-gateway run start",
     "start:auth": "npm --workspace auth-service run start",
+    "start:files": "npm --workspace files-service run start",
     "start:test": "npm --workspace testing-service run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +27,9 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
     "tsx": "^4.23.0"
   }
 }
