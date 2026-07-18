@@ -64,3 +64,68 @@ Authorization: Bearer {{loginAdmin.response.body.token}}
 ### 9. Staff or Admin Endpoint (Succeeds with Admin Token)
 GET {{baseUrl}}/test/staff-or-admin
 Authorization: Bearer {{loginAdmin.response.body.token}}
+
+
+### ---------------- AI Service Endpoints ----------------
+
+### 10. Get Custom Instructions
+GET {{baseUrl}}/ai/instructions
+Authorization: Bearer {{loginStandard.response.body.token}}
+
+### 11. Update Custom Instructions
+PUT {{baseUrl}}/ai/instructions
+Authorization: Bearer {{loginStandard.response.body.token}}
+Content-Type: application/json
+
+{
+  "systemPrompt": "You are a helpful AI assistant who speaks like a pirate."
+}
+
+### 12. Full AI Chat Response
+# @name aiChat
+POST {{baseUrl}}/ai/chat
+Authorization: Bearer {{loginStandard.response.body.token}}
+Content-Type: application/json
+
+{
+  "prompt": "What is the capital of France?",
+  "model": "llama3.2:3b"
+}
+
+### 13. Streaming AI Chat Response
+POST {{baseUrl}}/ai/chat/stream
+Authorization: Bearer {{loginStandard.response.body.token}}
+Content-Type: application/json
+
+{
+  "prompt": "Tell me a long story about a brave knight.",
+  "model": "llama3.2:3b"
+}
+
+### 14. Create a New Chat Thread
+# @name createChat
+POST {{baseUrl}}/ai/chats
+Authorization: Bearer {{loginStandard.response.body.token}}
+Content-Type: application/json
+
+{
+  "title": "My first AI conversation"
+}
+
+### 15. List All Chats
+GET {{baseUrl}}/ai/chats
+Authorization: Bearer {{loginStandard.response.body.token}}
+
+### 16. Get a Specific Chat
+GET {{baseUrl}}/ai/chats/{{createChat.response.body._id}}
+Authorization: Bearer {{loginStandard.response.body.token}}
+
+### 17. Send Message to Specific Chat
+POST {{baseUrl}}/ai/chats/{{createChat.response.body._id}}/message
+Authorization: Bearer {{loginStandard.response.body.token}}
+Content-Type: application/json
+
+{
+  "content": "Hello! How can you help me today?",
+  "model": "llama3.2:3b"
+}
