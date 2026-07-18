@@ -53,6 +53,22 @@ app.use('/files', createProxyMiddleware({
   }
 }));
 
+// Proxy /ai requests to ai-service
+app.use('/ai', createProxyMiddleware({
+  target: 'http://localhost:3004',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/ai': '',
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    logger.info(`[Gateway] Proxied /ai request: ${req.method} ${req.url}`);
+  },
+  onError: (err, req, res) => {
+    logger.error(`[Gateway] AI Proxy Error`, err);
+  }
+}));
+
 app.listen(PORT, () => {
+
   logger.info(`API Gateway is running on port ${PORT}`);
 });
